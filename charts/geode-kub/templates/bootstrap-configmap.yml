@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bootstrap
+data:
+  start.sh: |
+    #!/bin/bash -e
+    gfsh \
+    -e "connect --locator=geode-locator[10334]" \
+    -e "list members" \
+    -e "create region --name=test --type=REPLICATE" \
+    -e "put --key=adam --value=zwickey --region=test"

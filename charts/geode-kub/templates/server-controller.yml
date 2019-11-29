@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{.Values.geode_server.name}}
+spec:
+  selector:
+    matchLabels:
+      app: {{.Values.geode_server.name}}
+  serviceName: {{.Values.geode_server.name}}-service
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: {{.Values.geode_server.name}}
+        geode-server: "true"
+        role: server
+    spec:
+      containers:
+      - name: server
+        image: {{.Values.geode_server.image}}
+        imagePullPolicy: Always
+        command:
+        - bash
+        - /config/start.sh
+        ports:
+          - containerPort: {{.Values.geode_server.port}}
+            name: {{.Values.geode_server.port_name}}
+            protocol: TCP
+          - containerPort: {{.Values.geode_server.metrics_port}}
+            name: {{.Values.geode_server.metrics_port_name}}
+            protocol: TCP
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        env:
+          - name: GEODE_LOCATOR_HOST
+            value: "{{.Values.geode_locator.name}}-service"
+          - name: GEODE_LOCATOR_PORT
+            value: "{{.Values.geode_locator.port}}"
+          - name: GEODE_SERVER_METRICS_PORT
+            value: "{{.Values.geode_server.metrics_port}}"
+      volumes:
+      - name: config
+        configMap:
+          name: "server"

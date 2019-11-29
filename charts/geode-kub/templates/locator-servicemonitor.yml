@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{.Values.geode_locator.name}}-metrics-servicemonitor
+  # Change this to the namespace the Prometheus instance is running in
+  # namespace: default
+  labels:
+    app: {{.Values.geode_locator.name}}
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      geode-locator: "true" # same selector as locator service
+  endpoints:
+  - port: {{.Values.geode_locator.metrics_port_name}}
+    interval: 15s
+    path: /

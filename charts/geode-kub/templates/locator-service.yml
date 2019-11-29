@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: {{.Values.geode_locator.name}}-service
+    role: locator
+  name: {{.Values.geode_locator.name}}-service
+spec:
+  ports:
+  - port: {{.Values.geode_locator.port}}
+    targetPort: {{.Values.geode_locator.port}}
+    name: {{.Values.geode_locator.port_name}}
+    protocol: TCP
+  - port: {{.Values.geode_locator.metrics_port}}
+    targetPort: {{.Values.geode_locator.metrics_port}}
+    name: {{.Values.geode_locator.metrics_port_name}}
+    protocol: TCP
+  clusterIP: None
+  selector:
+    geode-locator: "true"

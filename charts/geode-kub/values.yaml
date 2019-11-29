@@ -1,0 +1,15 @@
+owner: "alb3rtobr"
+geode_locator:
+  name: geode-locator
+  port: 10334
+  port_name: locator-port
+  image: alb3rtobr/geode-kubernetes:test_prometheus
+  metrics_port: 33333
+  metrics_port_name: metrics-port
+geode_server:
+  name: geode-server
+  port: 40404
+  port_name: peer
+  image: alb3rtobr/geode-kubernetes:test_prometheus
+  metrics_port: 33333
+  metrics_port_name: metrics-port

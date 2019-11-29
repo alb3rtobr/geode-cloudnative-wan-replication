@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: server
+data:
+  start.sh: |
+    #!/bin/bash
+    locator_ready=0
+    for (( try=0; try<=10 && locator_ready==0; try++ ))
+    do
+      gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]"
+      if [ $? -eq 0 ];then
+        locator_ready=1
+      else
+        sleep 5
+      fi
+    done
+
+    JARS="/jars/metrics-publishing-service-1.0-SNAPSHOT.jar"
+    ./gfshWrapper.sh gfsh start server --name="${HOSTNAME}" --classpath=${JARS} --J=-Dprometheus.metrics.port=${GEODE_SERVER_METRICS_PORT} --locators=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}] --J=-Dlog4j.configurationFile=/config/log4j2.xml
+  log4j2.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <Configuration status="FATAL" shutdownHook="disable" packages="org.apache.geode.internal.logging.log4j">
+      <Properties>
+        <Property name="geode-pattern">[%level{lowerCase=true} %date{yyyy/MM/dd HH:mm:ss.SSS z} &lt;%thread&gt; tid=%tid] %message%n%throwable%n</Property>
+        <Property name="geode-default">true</Property>
+      </Properties>
+      <Appenders>
+        <Console name="STDOUT" class="org.apache.log4j.ConsoleAppender">
+          <param name="Target" value="System.out"/>
+          <PatternLayout pattern="${geode-pattern}"/>
+        </Console>
+      </Appenders>
+      <Loggers>
+        <Logger name="com.gemstone" level="INFO" additivity="true"/>
+        <Logger name="org.apache.geode" level="INFO" additivity="true">
+          <filters>
+            <MarkerFilter marker="GEODE_VERBOSE" onMatch="DENY" onMismatch="NEUTRAL"/>
+          </filters>
+        </Logger>
+        <Logger name="org.jgroups" level="FATAL" additivity="true"/>
+        <Logger name="org.eclipse.jetty" level="FATAL" additivity="true"/>
+        <Root level="INFO">
+          <AppenderRef ref="STDOUT"/>
+        </Root>
+      </Loggers>
+    </Configuration>

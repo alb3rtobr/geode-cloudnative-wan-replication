@@ -1,0 +1,4 @@
+apiVersion: v1
+description: GeodeKubernetes
+name: GeodeKubernetes
+version: 1.0.0
