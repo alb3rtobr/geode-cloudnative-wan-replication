@@ -16,8 +16,7 @@ data:
       fi
     done
 
-    JARS="/jars/metrics-publishing-service-1.0-SNAPSHOT.jar"
-    ./gfshWrapper.sh gfsh start server --name="${HOSTNAME}" --classpath=${JARS} --J=-Dprometheus.metrics.port=${GEODE_SERVER_METRICS_PORT} --locators=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}] --J=-Dlog4j.configurationFile=/config/log4j2.xml
+    ./gfshWrapper.sh gfsh start server --name="${HOSTNAME}" --locators=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}] --J=-Dgemfire.distributed-system-id=${GEODE_CLUSTER_ID} --J=-Dlog4j.configurationFile=/config/log4j2.xml
   log4j2.xml: |
     <?xml version="1.0" encoding="UTF-8"?>
     <Configuration status="FATAL" shutdownHook="disable" packages="org.apache.geode.internal.logging.log4j">

@@ -26,17 +26,14 @@ spec:
           - containerPort: {{.Values.geode_locator.port}}
             name: {{.Values.geode_locator.port_name}}
             protocol: TCP
-          - containerPort: {{.Values.geode_locator.metrics_port}}
-            name: {{.Values.geode_locator.metrics_port_name}}
-            protocol: TCP
         volumeMounts:
         - name: disk
           mountPath: /locator/data
         - name: config
           mountPath: /config
         env:
-          - name: GEODE_LOCATOR_METRICS_PORT
-            value: "{{.Values.geode_locator.metrics_port}}"
+          - name: GEODE_CLUSTER_ID
+            value: "{{.Values.geode_cluster_id}}"
       volumes:
       - name: config
         configMap:

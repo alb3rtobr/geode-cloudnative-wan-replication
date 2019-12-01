@@ -11,10 +11,6 @@ spec:
     targetPort: {{.Values.geode_server.port}}
     name: {{.Values.geode_server.port_name}}
     protocol: TCP
-  - port: {{.Values.geode_server.metrics_port}}
-    targetPort: {{.Values.geode_server.metrics_port}}
-    name: {{.Values.geode_server.metrics_port_name}}
-    protocol: TCP
   clusterIP: None
   selector:
     geode-server: "true"
