@@ -16,7 +16,26 @@ data:
       fi
     done
 
-    ./gfshWrapper.sh gfsh start server --name="${HOSTNAME}" --locators=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}] --J=-Dgemfire.distributed-system-id=${GEODE_CLUSTER_ID} --J=-Dlog4j.configurationFile=/config/log4j2.xml
+    gfsh start server --name="${HOSTNAME}" --locators=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}] --J=-Dgemfire.distributed-system-id=${GEODE_CLUSTER_ID} --J=-Dlog4j.configurationFile=/config/log4j2.xml
+
+    servers_ready=0
+    for (( try=0; try<=10 && servers_ready==0; try++ ))
+    do
+      servers=`gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "list members" | grep geode-server- | wc -l`
+      if [ $servers == '2' ];then
+        servers_ready=1
+      else
+        sleep 5
+      fi
+    done
+
+    gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "create gateway-sender --id=sender-to-${GEODE_REMOTE_CLUSTER_ID} --parallel=true --remote-distributed-system-id=${GEODE_REMOTE_CLUSTER_ID}"
+    gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "create gateway-receiver"
+
+    while true; do
+      sleep 10
+    done
+
   log4j2.xml: |
     <?xml version="1.0" encoding="UTF-8"?>
     <Configuration status="FATAL" shutdownHook="disable" packages="org.apache.geode.internal.logging.log4j">

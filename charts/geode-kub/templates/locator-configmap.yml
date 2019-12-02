@@ -39,7 +39,12 @@ data:
         echo $LOCATOR_STR
     done
 
-    ./gfshWrapper.sh gfsh start locator --name=${HOSTNAME} --locators=$LOCATOR_STR --J=-Dgemfire.distributed-system-id=${GEODE_CLUSTER_ID} --dir=/locator/data --J=-Dlog4j.configurationFile=/config/log4j2.xml
+    gfsh start locator --name=${HOSTNAME} --locators=$LOCATOR_STR --J=-Dgemfire.distributed-system-id=${GEODE_CLUSTER_ID} --dir=/locator/data --J=-Dlog4j.configurationFile=/config/log4j2.xml
+
+    while true; do
+      sleep 10
+    done
+
   log4j2.xml: |
     <?xml version="1.0" encoding="UTF-8"?>
     <Configuration status="FATAL" shutdownHook="disable" packages="org.apache.geode.internal.logging.log4j">

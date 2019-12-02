@@ -1,13 +1,13 @@
 
 Create namespaces for both clusters (`helm`cannot create namespaces so they have to be created in advance):
 ```
-$ kubectl create -f namespaces.json 
+$ kubectl create -f namespaces.json
 ```
 
 Deploy cluster:
 ```
-$ helm install --namespace=geode-cluster-1 geode-kub charts/geode-kub --set geode_cluster_id=1
-$ helm install --namespace=geode-cluster-2 geode-kub charts/geode-kub --set geode_cluster_id=2
+$ helm install --namespace=geode-cluster-1 geode-kub charts/geode-kub --set geode_cluster_id=1 --set geode_remote_cluster_id=2
+$ helm install --namespace=geode-cluster-2 geode-kub charts/geode-kub --set geode_cluster_id=2 --set geode_remote_cluster_id=1
 ```
 
 Check status:
