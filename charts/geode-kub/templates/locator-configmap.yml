@@ -39,7 +39,7 @@ data:
         echo $LOCATOR_STR
     done
 
-    gfsh start locator --name=${HOSTNAME} --locators=$LOCATOR_STR --J=-Dgemfire.distributed-system-id=${GEODE_CLUSTER_ID} --dir=/locator/data --J=-Dlog4j.configurationFile=/config/log4j2.xml
+    gfsh start locator --name=${HOSTNAME} --locators=$LOCATOR_STR --J=-Dgemfire.distributed-system-id=${GEODE_CLUSTER_ID} --J=-Dgemfire.remote-locators=${GEODE_REMOTE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}] --dir=/locator/data --J=-Dlog4j.configurationFile=/config/log4j2.xml
 
     while true; do
       sleep 10

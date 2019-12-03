@@ -2,9 +2,9 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    name: {{.Values.geode_locator.name}}-service
+    name: {{.Values.geode_locator.name}}-site{{.Values.geode_cluster_id}}-service
     role: locator
-  name: {{.Values.geode_locator.name}}-service
+  name: {{.Values.geode_locator.name}}-site{{.Values.geode_cluster_id}}-service
 spec:
   ports:
   - port: {{.Values.geode_locator.port}}

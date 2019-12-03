@@ -6,7 +6,7 @@ spec:
   selector:
     matchLabels:
       app: {{.Values.geode_server.name}}
-  serviceName: {{.Values.geode_server.name}}-service
+  serviceName: {{.Values.geode_server.name}}-site{{.Values.geode_cluster_id}}-service
   replicas: 2
   template:
     metadata:
@@ -31,13 +31,17 @@ spec:
           mountPath: /config
         env:
           - name: GEODE_LOCATOR_HOST
-            value: "{{.Values.geode_locator.name}}-service"
+            value: "{{.Values.geode_locator.name}}-site{{.Values.geode_cluster_id}}-service"
           - name: GEODE_LOCATOR_PORT
             value: "{{.Values.geode_locator.port}}"
           - name: GEODE_CLUSTER_ID
             value: "{{.Values.geode_cluster_id}}"
           - name: GEODE_REMOTE_CLUSTER_ID
             value: "{{.Values.geode_remote_cluster_id}}"
+          - name: GEODE_RECEIVER_SERVICE_NAME
+            value: "{{.Values.geode_server.name}}-site{{.Values.geode_cluster_id}}-service"
+          - name: GEODE_RECEIVER_SERVICE_PORT
+            value: "{{.Values.geode_server.receiver_port}}"
       volumes:
       - name: config
         configMap:
