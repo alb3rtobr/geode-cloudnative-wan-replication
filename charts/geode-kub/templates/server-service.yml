@@ -6,11 +6,17 @@ metadata:
     role: server
   name: {{.Values.geode_server.name}}-site{{.Values.geode_cluster_id}}-service
 spec:
+  type: NodePort
   ports:
   - name: {{.Values.geode_server.port_name}}
     port: {{.Values.geode_server.port}}
     targetPort: {{.Values.geode_server.port}}
+    nodePort: {{.Values.geode_server.port}}
     protocol: TCP
-  clusterIP: None
+  - name: {{.Values.receiver.port_name}}
+    port: {{.Values.receiver.port}}
+    targetPort: {{.Values.receiver.port}}
+    nodePort: {{.Values.receiver.port}}
+    protocol: TCP
   selector:
     geode-server: "true"

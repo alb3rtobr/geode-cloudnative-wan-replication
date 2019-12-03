@@ -4,10 +4,10 @@ Create namespaces for both clusters (`helm`cannot create namespaces so they have
 $ kubectl create -f namespaces.json
 ```
 
-Deploy cluster:
+Deploy clusters (one locator + two servers + parallel gw sender + gw receivers):
 ```
-$ helm install --namespace=geode-cluster-1 geode-kub charts/geode-kub --set geode_cluster_id=1 --set geode_remote_cluster_id=2
-$ helm install --namespace=geode-cluster-2 geode-kub charts/geode-kub --set geode_cluster_id=2 --set geode_remote_cluster_id=1
+$ helm install --namespace=geode-cluster-1 -f cluster-1-values.yaml geode-kub charts/geode-kub
+$ helm install --namespace=geode-cluster-2 -f cluster-2-values.yaml geode-kub charts/geode-kub
 ```
 
 Check status:

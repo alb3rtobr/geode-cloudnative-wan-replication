@@ -6,8 +6,8 @@ geode_locator:
   image: alb3rtobr/mygeode:1.10.0
 geode_server:
   name: geode-server
-  port: 40404
   port_name: peer
   image: alb3rtobr/mygeode:1.10.0
-  receiver_port_name: geode-gw-receiver-port
-  receiver_port: 30036
+receiver:
+  name: receiver
+  port_name: receiver-port

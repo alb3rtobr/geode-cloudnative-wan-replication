@@ -26,6 +26,9 @@ spec:
           - containerPort: {{.Values.geode_server.port}}
             name: {{.Values.geode_server.port_name}}
             protocol: TCP
+          - containerPort: {{.Values.receiver.port}}
+            name: {{.Values.receiver.port_name}}
+            protocol: TCP
         volumeMounts:
         - name: config
           mountPath: /config
@@ -41,7 +44,7 @@ spec:
           - name: GEODE_RECEIVER_SERVICE_NAME
             value: "{{.Values.geode_server.name}}-site{{.Values.geode_cluster_id}}-service"
           - name: GEODE_RECEIVER_SERVICE_PORT
-            value: "{{.Values.geode_server.receiver_port}}"
+            value: "{{.Values.receiver.port}}"
       volumes:
       - name: config
         configMap:

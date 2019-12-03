@@ -34,6 +34,8 @@ spec:
         env:
           - name: GEODE_CLUSTER_ID
             value: "{{.Values.geode_cluster_id}}"
+          - name: GEODE_REMOTE_CLUSTER_ID
+            value: "{{.Values.geode_remote_cluster_id}}"
           - name: GEODE_LOCATOR_PORT
             value: "{{.Values.geode_locator.port}}"
           - name: GEODE_REMOTE_LOCATOR_HOST

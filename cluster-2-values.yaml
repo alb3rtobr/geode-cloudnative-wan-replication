@@ -1,0 +1,6 @@
+geode_cluster_id: 2
+geode_remote_cluster_id: 1
+geode_server:
+  port: 30305
+receiver:
+  port: 30038

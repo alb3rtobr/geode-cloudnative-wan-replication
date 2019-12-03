@@ -29,8 +29,8 @@ data:
       fi
     done
 
+    gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "create gateway-receiver --hostname-for-senders=${GEODE_RECEIVER_SERVICE_NAME}:${GEODE_RECEIVER_SERVICE_PORT}"
     gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "create gateway-sender --id=sender-to-${GEODE_REMOTE_CLUSTER_ID} --parallel=true --remote-distributed-system-id=${GEODE_REMOTE_CLUSTER_ID}"
-    #gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "create gateway-receiver --hostname-for-senders=${GEODE_RECEIVER_SERVICE_NAME}:${GEODE_RECEIVER_SERVICE_PORT}"
     gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "create region --name=example-region --type=PARTITION_REDUNDANT --gateway-sender-id=sender-to-${GEODE_REMOTE_CLUSTER_ID}"
 
     while true; do
