@@ -20,5 +20,7 @@ Uninstall:
 ```
 $ helm delete --namespace=geode-cluster-1 geode-kub
 $ helm delete --namespace=geode-cluster-2 geode-kub
+$ kubectl delete pvc disk-geode-locator-0 --namespace=geode-cluster-1
+$ kubectl delete pvc disk-geode-locator-0 --namespace=geode-cluster-2
 $ kubectl delete namespace geode-cluster-1 geode-cluster-2
 ```

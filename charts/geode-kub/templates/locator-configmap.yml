@@ -9,36 +9,8 @@ data:
     #Clean up stale PID from container exit
     rm -f /locator/data/vf.gf.locator.pid
 
-    gfsh start locator --name=${HOSTNAME} --J=-Dgemfire.distributed-system-id=${GEODE_CLUSTER_ID} --J=-Dgemfire.remote-locators=${HOSTNAME}.${GEODE_REMOTE_LOCATOR_HOST}.geode-cluster-${GEODE_REMOTE_CLUSTER_ID}.svc.cluster.local[${GEODE_LOCATOR_PORT}] --dir=/locator/data --J=-Dlog4j.configurationFile=/config/log4j2.xml
+    gfsh start locator --name=${HOSTNAME} --port=${GEODE_LOCATOR_PORT} --J=-Dgemfire.distributed-system-id=${GEODE_CLUSTER_ID} --J=-Dgemfire.remote-locators=${HOSTNAME}.${GEODE_REMOTE_LOCATOR_HOST}.geode-cluster-${GEODE_REMOTE_CLUSTER_ID}.svc.cluster.local[${GEODE_REMOTE_LOCATOR_PORT}] --dir=/locator/data
 
     while true; do
       sleep 10
     done
-
-  log4j2.xml: |
-    <?xml version="1.0" encoding="UTF-8"?>
-    <Configuration status="FATAL" shutdownHook="disable" packages="org.apache.geode.internal.logging.log4j">
-      <Properties>
-        <Property name="geode-pattern">[%level{lowerCase=true} %date{yyyy/MM/dd HH:mm:ss.SSS z} &lt;%thread&gt; tid=%tid] %message%n%throwable%n</Property>
-        <Property name="geode-default">true</Property>
-      </Properties>
-      <Appenders>
-        <Console name="STDOUT" class="org.apache.log4j.ConsoleAppender">
-          <param name="Target" value="System.out"/>
-          <PatternLayout pattern="${geode-pattern}"/>
-        </Console>
-      </Appenders>
-      <Loggers>
-        <Logger name="com.gemstone" level="INFO" additivity="true"/>
-        <Logger name="org.apache.geode" level="INFO" additivity="true">
-          <filters>
-            <MarkerFilter marker="GEODE_VERBOSE" onMatch="DENY" onMismatch="NEUTRAL"/>
-          </filters>
-        </Logger>
-        <Logger name="org.jgroups" level="FATAL" additivity="true"/>
-        <Logger name="org.eclipse.jetty" level="FATAL" additivity="true"/>
-        <Root level="INFO">
-          <AppenderRef ref="STDOUT"/>
-        </Root>
-      </Loggers>
-    </Configuration>

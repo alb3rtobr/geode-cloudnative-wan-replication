@@ -7,9 +7,9 @@ metadata:
   name: {{.Values.geode_locator.name}}-site{{.Values.geode_cluster_id}}-service
 spec:
   ports:
-  - port: {{.Values.geode_locator.port}}
+  - name: {{.Values.geode_locator.port_name}}
+    port: {{.Values.geode_locator.port}}
     targetPort: {{.Values.geode_locator.port}}
-    name: {{.Values.geode_locator.port_name}}
     protocol: TCP
   clusterIP: None
   selector:

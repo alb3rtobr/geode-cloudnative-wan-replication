@@ -42,7 +42,7 @@ spec:
           - name: GEODE_REMOTE_CLUSTER_ID
             value: "{{.Values.geode_remote_cluster_id}}"
           - name: GEODE_RECEIVER_SERVICE_NAME
-            value: "{{.Values.geode_server.name}}-site{{.Values.geode_cluster_id}}-service"
+            value: "receiver-site{{.Values.geode_cluster_id}}-service"
           - name: GEODE_RECEIVER_SERVICE_PORT
             value: "{{.Values.receiver.port}}"
       volumes:

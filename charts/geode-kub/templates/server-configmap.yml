@@ -5,6 +5,9 @@ metadata:
 data:
   start.sh: |
     #!/bin/bash
+
+    sleep $(( RANDOM % 5 ))
+
     locator_ready=0
     for (( try=0; try<=10 && locator_ready==0; try++ ))
     do
@@ -16,51 +19,27 @@ data:
       fi
     done
 
-    gfsh start server --name="${HOSTNAME}" --locators=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}] --J=-Dgemfire.distributed-system-id=${GEODE_CLUSTER_ID} --J=-Dlog4j.configurationFile=/config/log4j2.xml
+    gfsh start server --name=${HOSTNAME} --locators=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}] --J=-Dgemfire.distributed-system-id=${GEODE_CLUSTER_ID}
 
     servers_ready=0
     for (( try=0; try<=10 && servers_ready==0; try++ ))
     do
-      servers=`gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "list members" | grep geode-server- | wc -l`
+      servers=`gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "list members" | grep server- | wc -l`
       if [ $servers == '2' ];then
         servers_ready=1
       else
-        sleep 5
+        sleep $(( (RANDOM % 5) + 1 ))
       fi
     done
 
-    gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "create gateway-receiver --hostname-for-senders=${GEODE_RECEIVER_SERVICE_NAME}:${GEODE_RECEIVER_SERVICE_PORT}"
+    gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "create gateway-receiver --hostname-for-senders=${GEODE_RECEIVER_SERVICE_NAME} --member=$HOSTNAME --start-port=${GEODE_RECEIVER_SERVICE_PORT} --end-port=${GEODE_RECEIVER_SERVICE_PORT}"
     gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "create gateway-sender --id=sender-to-${GEODE_REMOTE_CLUSTER_ID} --parallel=true --remote-distributed-system-id=${GEODE_REMOTE_CLUSTER_ID}"
-    gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "create region --name=example-region --type=PARTITION_REDUNDANT --gateway-sender-id=sender-to-${GEODE_REMOTE_CLUSTER_ID}"
+
+    if [ $HOSTNAME == 'server-0' ]; then
+      sleep 5
+      gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "create region --name=example-region --type=PARTITION_REDUNDANT --gateway-sender-id=sender-to-${GEODE_REMOTE_CLUSTER_ID}"
+    fi
 
     while true; do
       sleep 10
     done
-
-  log4j2.xml: |
-    <?xml version="1.0" encoding="UTF-8"?>
-    <Configuration status="FATAL" shutdownHook="disable" packages="org.apache.geode.internal.logging.log4j">
-      <Properties>
-        <Property name="geode-pattern">[%level{lowerCase=true} %date{yyyy/MM/dd HH:mm:ss.SSS z} &lt;%thread&gt; tid=%tid] %message%n%throwable%n</Property>
-        <Property name="geode-default">true</Property>
-      </Properties>
-      <Appenders>
-        <Console name="STDOUT" class="org.apache.log4j.ConsoleAppender">
-          <param name="Target" value="System.out"/>
-          <PatternLayout pattern="${geode-pattern}"/>
-        </Console>
-      </Appenders>
-      <Loggers>
-        <Logger name="com.gemstone" level="INFO" additivity="true"/>
-        <Logger name="org.apache.geode" level="INFO" additivity="true">
-          <filters>
-            <MarkerFilter marker="GEODE_VERBOSE" onMatch="DENY" onMismatch="NEUTRAL"/>
-          </filters>
-        </Logger>
-        <Logger name="org.jgroups" level="FATAL" additivity="true"/>
-        <Logger name="org.eclipse.jetty" level="FATAL" additivity="true"/>
-        <Root level="INFO">
-          <AppenderRef ref="STDOUT"/>
-        </Root>
-      </Loggers>
-    </Configuration>
