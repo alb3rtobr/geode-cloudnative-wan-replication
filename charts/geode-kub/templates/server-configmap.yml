@@ -32,7 +32,7 @@ data:
       fi
     done
 
-    gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "create gateway-receiver --hostname-for-senders=${GEODE_RECEIVER_SERVICE_NAME} --member=$HOSTNAME --start-port=${GEODE_RECEIVER_SERVICE_PORT} --end-port=${GEODE_RECEIVER_SERVICE_PORT}"
+    gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "create gateway-receiver --hostname-for-senders=${GEODE_RECEIVER_SERVICE_NAME}.geode-cluster-${GEODE_CLUSTER_ID}.svc.cluster.local --member=$HOSTNAME --start-port=${GEODE_RECEIVER_SERVICE_PORT} --end-port=${GEODE_RECEIVER_SERVICE_PORT}"
     gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "create gateway-sender --id=sender-to-${GEODE_REMOTE_CLUSTER_ID} --parallel=true --remote-distributed-system-id=${GEODE_REMOTE_CLUSTER_ID}"
 
     if [ $HOSTNAME == 'server-0' ]; then
