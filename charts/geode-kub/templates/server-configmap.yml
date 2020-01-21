@@ -6,8 +6,15 @@ data:
   start.sh: |
     #!/bin/bash
 
+    sender_params=""
+    #sender_params="--dispatcher-threads=2 --order-policy=key --parallel=false"
+
+
     sleep $(( RANDOM % 5 ))
 
+    #
+    # Check if locators are ready
+    #
     locator_ready=0
     for (( try=0; try<=10 && locator_ready==0; try++ ))
     do
@@ -21,6 +28,9 @@ data:
 
     gfsh start server --name=${HOSTNAME} --locators=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}] --J=-Dgemfire.distributed-system-id=${GEODE_CLUSTER_ID}
 
+    #
+    # Wait for servers...
+    #
     servers_ready=0
     for (( try=0; try<=10 && servers_ready==0; try++ ))
     do
@@ -32,12 +42,25 @@ data:
       fi
     done
 
-    gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "create gateway-receiver --hostname-for-senders=${GEODE_RECEIVER_SERVICE_NAME}.geode-cluster-${GEODE_CLUSTER_ID}.svc.cluster.local --member=$HOSTNAME --start-port=${GEODE_RECEIVER_SERVICE_PORT} --end-port=${GEODE_RECEIVER_SERVICE_PORT}"
-    gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "create gateway-sender --id=sender-to-${GEODE_REMOTE_CLUSTER_ID} --parallel=true --remote-distributed-system-id=${GEODE_REMOTE_CLUSTER_ID}"
+    #
+    # Create gw receiver in cluster-2
+    #
+    if [ ${GEODE_CLUSTER_ID} == '2' ]; then
+      gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "create gateway-receiver --hostname-for-senders=${GEODE_RECEIVER_SERVICE_NAME}.geode-cluster-${GEODE_CLUSTER_ID}.svc.cluster.local --member=$HOSTNAME --start-port=${GEODE_RECEIVER_SERVICE_PORT} --end-port=${GEODE_RECEIVER_SERVICE_PORT}"
+    fi
 
+    #
+    # Create gw sender in cluster-1, and region on both clusters
+    #
     if [ $HOSTNAME == 'server-0' ]; then
-      sleep 5
-      gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "create region --name=example-region --type=PARTITION_REDUNDANT --gateway-sender-id=sender-to-${GEODE_REMOTE_CLUSTER_ID}"
+      sender_str=""
+      if [ ${GEODE_CLUSTER_ID} == '1' ]; then
+        sleep 5
+        sender_str="--gateway-sender-id=sender-to-${GEODE_REMOTE_CLUSTER_ID}"
+        gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "create gateway-sender --id=sender-to-${GEODE_REMOTE_CLUSTER_ID} ${sender_params} --remote-distributed-system-id=${GEODE_REMOTE_CLUSTER_ID}"
+
+      fi
+      gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "create region --name=example-region --type=PARTITION_REDUNDANT ${sender_str}"
     fi
 
     while true; do

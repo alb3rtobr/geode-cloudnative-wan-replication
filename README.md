@@ -153,6 +153,47 @@ GatewayReceiver Section
 In this case, sender in server-1 in cluster-1 is still working due to it had no connections to server-1 in cluster-2.
 
 
+# Solution
+
+After implementing the solution, the issue is solved:
+
+```
+Cluster-1 gfsh>list gateways
+GatewaySender Section
+
+GatewaySender Id |              Member               | Remote Cluster Id |   Type   | Status  | Queued Events | Receiver Location
+---------------- | --------------------------------- | ----------------- | -------- | ------- | ------------- | -------------------------------------------------------------------------------------------------
+sender-to-2      | 172.17.0.5(server-0:65)<v1>:41000 | 2                 | Parallel | Running | 0             | receiver-site2-service.geode-cluster-2.svc.cluster.local:32000@172.17.0.8(server-0:65)<v2>:41000
+sender-to-2      | 172.17.0.7(server-1:46)<v1>:41000 | 2                 | Parallel | Running | 0             | receiver-site2-service.geode-cluster-2.svc.cluster.local:32000@172.17.0.10(server-1:46)<v1>:41000
+```
+
+After stopping `server-0` in cluster-2, one of the senders is not connected to any receiver:
+
+```
+Cluster-1 gfsh>list gateways
+GatewaySender Section
+
+GatewaySender Id |              Member               | Remote Cluster Id |   Type   | Status  | Queued Events | Receiver Location
+---------------- | --------------------------------- | ----------------- | -------- | ------- | ------------- | -------------------------------------------------------------------------------------------------
+sender-to-2      | 172.17.0.5(server-0:65)<v1>:41000 | 2                 | Parallel | Running | 0             | receiver-site2-service.geode-cluster-2.svc.cluster.local:32000@172.17.0.10(server-1:46)<v1>:41000
+sender-to-2      | 172.17.0.7(server-1:46)<v1>:41000 | 2                 | Parallel | Running | 0             | 
+
+```
+
+But checking again, it can be seen the sender was connected to the other available receiver:
+```
+Cluster-1 gfsh>list gateways
+GatewaySender Section
+
+GatewaySender Id |              Member               | Remote Cluster Id |   Type   | Status  | Queued Events | Receiver Location
+---------------- | --------------------------------- | ----------------- | -------- | ------- | ------------- | -------------------------------------------------------------------------------------------------
+sender-to-2      | 172.17.0.5(server-0:65)<v1>:41000 | 2                 | Parallel | Running | 0             | receiver-site2-service.geode-cluster-2.svc.cluster.local:32000@172.17.0.10(server-1:46)<v1>:41000
+sender-to-2      | 172.17.0.7(server-1:46)<v1>:41000 | 2                 | Parallel | Running | 0             | receiver-site2-service.geode-cluster-2.svc.cluster.local:32000@172.17.0.10(server-1:46)<v1>:41000
+
+```
+
+
+
 
 # Uninstall environment
 

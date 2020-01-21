@@ -3,12 +3,12 @@ geode_locator:
   port: 10334
   name: locator
   port_name: locator-port
-  image: alb3rtobr/mygeode:1.10.0
+  image: alb3rtobr/mygeode:7565_c41242ff68
 geode_server:
   port: 30303
   name: server
   port_name: peer
-  image: alb3rtobr/mygeode:1.10.0
+  image: alb3rtobr/mygeode:7565_c41242ff68
 receiver:
   name: receiver
   port_name: receiver-port
