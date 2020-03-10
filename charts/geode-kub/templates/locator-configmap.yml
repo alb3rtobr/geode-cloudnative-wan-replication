@@ -6,10 +6,13 @@ data:
   start.sh: |
     #!/bin/bash
 
+    debug_param=""
+    #debug_param="--log-level=DEBUG"
+
     #Clean up stale PID from container exit
     rm -f /locator/data/vf.gf.locator.pid
 
-    gfsh start locator --name=${HOSTNAME} --port=${GEODE_LOCATOR_PORT} --J=-Dgemfire.distributed-system-id=${GEODE_CLUSTER_ID} --J=-Dgemfire.remote-locators=${HOSTNAME}.${GEODE_REMOTE_LOCATOR_HOST}.geode-cluster-${GEODE_REMOTE_CLUSTER_ID}.svc.cluster.local[${GEODE_REMOTE_LOCATOR_PORT}] --dir=/locator/data
+    gfsh start locator --name=${HOSTNAME} ${debug_param} --port=${GEODE_LOCATOR_PORT} --J=-Dgemfire.distributed-system-id=${GEODE_CLUSTER_ID} --J=-Dgemfire.remote-locators=${HOSTNAME}.${GEODE_REMOTE_LOCATOR_HOST}.geode-cluster-${GEODE_REMOTE_CLUSTER_ID}.svc.cluster.local[${GEODE_REMOTE_LOCATOR_PORT}] --dir=/locator/data
 
     while true; do
       sleep 10

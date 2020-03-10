@@ -6,7 +6,10 @@ data:
   start.sh: |
     #!/bin/bash
 
-    sender_params=""
+    debug_param=""
+    #debug_param="--log-level=DEBUG"
+
+    sender_params="--parallel=true"
     #sender_params="--dispatcher-threads=2 --order-policy=key --parallel=false"
 
 
@@ -26,7 +29,7 @@ data:
       fi
     done
 
-    gfsh start server --name=${HOSTNAME} --locators=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}] --J=-Dgemfire.distributed-system-id=${GEODE_CLUSTER_ID}
+    gfsh start server --name=${HOSTNAME} ${debug_param} --locators=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}] --J=-Dgemfire.distributed-system-id=${GEODE_CLUSTER_ID}
 
     #
     # Wait for servers...
@@ -60,7 +63,7 @@ data:
         gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "create gateway-sender --id=sender-to-${GEODE_REMOTE_CLUSTER_ID} ${sender_params} --remote-distributed-system-id=${GEODE_REMOTE_CLUSTER_ID}"
 
       fi
-      gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "create region --name=example-region --type=PARTITION_REDUNDANT ${sender_str}"
+      gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "create region --name=example-region --type=PARTITION_REDUNDANT --redundant-copies=2 ${sender_str}"
     fi
 
     while true; do
