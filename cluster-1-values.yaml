@@ -2,3 +2,5 @@ geode_cluster_id: 1
 geode_remote_cluster_id: 2
 receiver:
   port: 31000
+remote_receiver:
+  port: 32000

@@ -38,7 +38,7 @@ data:
     for (( try=0; try<=10 && servers_ready==0; try++ ))
     do
       servers=`gfsh -e "connect --locator=${GEODE_LOCATOR_HOST}[${GEODE_LOCATOR_PORT}]" -e "list members" | grep server- | wc -l`
-      if [ $servers == '2' ];then
+      if [ $servers == '{{.Values.geode_server.replicas}}' ];then
         servers_ready=1
       else
         sleep $(( (RANDOM % 5) + 1 ))

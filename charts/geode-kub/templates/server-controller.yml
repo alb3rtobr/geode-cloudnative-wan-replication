@@ -7,7 +7,7 @@ spec:
     matchLabels:
       app: {{.Values.geode_server.name}}
   serviceName: {{.Values.geode_server.name}}-site{{.Values.geode_cluster_id}}-service
-  replicas: 2
+  replicas: {{.Values.geode_server.replicas}}
   template:
     metadata:
       labels:
@@ -39,12 +39,16 @@ spec:
             value: "{{.Values.geode_locator.port}}"
           - name: GEODE_CLUSTER_ID
             value: "{{.Values.geode_cluster_id}}"
-          - name: GEODE_REMOTE_CLUSTER_ID
-            value: "{{.Values.geode_remote_cluster_id}}"
           - name: GEODE_RECEIVER_SERVICE_NAME
             value: "receiver-site{{.Values.geode_cluster_id}}-service"
           - name: GEODE_RECEIVER_SERVICE_PORT
             value: "{{.Values.receiver.port}}"
+          - name: GEODE_REMOTE_CLUSTER_ID
+            value: "{{.Values.geode_remote_cluster_id}}"
+          - name: GEODE_REMOTE_RECEIVER_SERVICE_NAME
+            value: "receiver-site{{.Values.geode_remote_cluster_id}}-service"
+          - name: GEODE_REMOTE_RECEIVER_SERVICE_PORT
+            value: "{{.Values.remote_receiver.port}}"
       volumes:
       - name: config
         configMap:
