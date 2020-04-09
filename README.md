@@ -8,15 +8,32 @@ If several receivers are exposed using the same `hostname-for-senders` parameter
 
 The environment consists on two Geode clusters in different namespaces, composed by one locator and two servers with one gateway receiver and a parallel gateway sender. A partitioned region called `/example-region` is also created on each cluster.
 
-1) Create `geode-cluster-1` and `geode-cluster-2` namespaces for both clusters (`helm` cannot create namespaces so they have to be created in advance):
+The clusters are created by the 'start-clusters.sh' script:
 ```
-$ kubectl create -f namespaces.json
-```
+$ ./start-clusters.sh 
 
-2) Deploy clusters:
-```
-$ helm install --namespace=geode-cluster-1 -f cluster-1-values.yaml geode-kub charts/geode-kub
-$ helm install --namespace=geode-cluster-2 -f cluster-2-values.yaml geode-kub charts/geode-kub
+ -> Creating namespace 'geode-cluster-1'
+namespace/geode-cluster-1 created
+
+ -> Creating namespace 'geode-cluster-2'
+namespace/geode-cluster-2 created
+
+ -> Installing cluster in namespace 'geode-cluster-1'
+NAME: geode-kub
+LAST DEPLOYED: Wed Apr  8 10:14:09 2020
+NAMESPACE: geode-cluster-1
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+
+ -> Installing cluster in namespace 'geode-cluster-2'
+NAME: geode-kub
+LAST DEPLOYED: Wed Apr  8 10:14:10 2020
+NAMESPACE: geode-cluster-2
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+
 ```
 
 
@@ -197,10 +214,18 @@ sender-to-2      | 172.17.0.7(server-1:46)<v1>:41000 | 2                 | Paral
 
 # Uninstall environment
 
-Use the `delete-cluster` helper script to delete both clusters:
+Use the `delete-clusters.sh` script to delete both clusters:
+
 ```
-$ ./delete-cluster.sh 1
-$ ./delete-cluster.sh 2
+$ ./delete-clusters.sh 
+
+ -> Deleting cluster in namespace 'geode-cluster-1'
+release "geode-kub" uninstalled
+persistentvolumeclaim "disk-locator-0" deleted
+
+ -> Deleting cluster in namespace 'geode-cluster-2'
+release "geode-kub" uninstalled
+persistentvolumeclaim "disk-locator-0" deleted
 ```
 
 And finally, remove namespaces:
